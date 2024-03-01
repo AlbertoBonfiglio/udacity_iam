@@ -73,7 +73,7 @@ The `--reload` flag will detect file changes and restart the server automaticall
      - can perform all actions
 7. Test your endpoints with [Postman](https://getpostman.com).
    - Register 2 users - assign the Barista role to one and Manager role to the other.
-   - Sign into each account and make note of the JWT.
+   - Sign into each account and make note of the JWT.Auth0 needs to be configured with a default directory for the call to oauth/token to retrieve the access token to work
    - Import the postman collection `./starter_code/backend/udacity-fsnd-udaspicelatte.postman_collection.json`
    - Right-clicking the collection folder for barista and manager, navigate to the authorization tab, and including the JWT in the token field (you should have noted these JWTs).
    - Run the collection and correct any errors.

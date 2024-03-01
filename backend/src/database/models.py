@@ -1,11 +1,31 @@
 import os
+from faker import Faker
 from sqlalchemy import Column, String, Integer
 from flask_sqlalchemy import SQLAlchemy
+from faker_sqlalchemy import SqlAlchemyProvider
 import json
+
+DRINKS = [ 
+    "20th century",
+    "Angel face",
+    "Aviation", 
+    "Bee's knees",
+    "Bijou",
+    "Blackthorn",
+    "Bloody Margaret",
+    "Bramble",
+    "Breakfast martini",
+    "Bronx",
+    "Casino",
+    "Cloister"
+]
+
+
 
 database_filename = "database.db"
 project_dir = os.path.dirname(os.path.abspath(__file__))
-database_path = "sqlite:///{}".format(os.path.join(project_dir, database_filename))
+database_path = "sqlite:///{}".format(
+    os.path.join(project_dir, database_filename))
 
 db = SQLAlchemy()
 
@@ -31,17 +51,26 @@ db_drop_and_create_all()
 
 
 def db_drop_and_create_all():
-    db.drop_all()
-    db.create_all()
-    # add one demo row which is helping in POSTMAN test
-    drink = Drink(
-        title='water',
-        recipe='[{"name": "water", "color": "blue", "parts": 1}]'
-    )
+    try: 
+        ROWS = 9
+        db.drop_all()
+        db.create_all()
 
+        # add one demo row which is helping in POSTMAN test
+        for i in DRINKS:
+            drink = Drink(
+                title=i,
+                recipe='[{"name": "water", "color": "blue", "parts": 1}]'
+            )
+            drink.insert()
+    except Exception as err:
+        # Log the error to the console
+        print("Something went wrong", err)
+        # rethrow it
+        raise err
 
-    drink.insert()
 # ROUTES
+
 
 '''
 Drink
@@ -65,7 +94,8 @@ class Drink(db.Model):
 
     def short(self):
         print(json.loads(self.recipe))
-        short_recipe = [{'color': r['color'], 'parts': r['parts']} for r in json.loads(self.recipe)]
+        short_recipe = [{'color': r['color'], 'parts': r['parts']}
+                        for r in json.loads(self.recipe)]
         return {
             'id': self.id,
             'title': self.title,
