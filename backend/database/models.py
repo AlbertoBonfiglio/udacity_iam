@@ -2,7 +2,6 @@ import os
 from faker import Faker
 from sqlalchemy import Column, String, Integer
 from flask_sqlalchemy import SQLAlchemy
-from faker_sqlalchemy import SqlAlchemyProvider
 import json
 
 DRINKS = [ 
@@ -20,36 +19,33 @@ DRINKS = [
     "Cloister"
 ]
 
-
-
-database_filename = "database.db"
-project_dir = os.path.dirname(os.path.abspath(__file__))
-database_path = "sqlite:///{}".format(
-    os.path.join(project_dir, database_filename))
-
 db = SQLAlchemy()
 
 '''
 setup_db(app)
     binds a flask application and a SQLAlchemy service
 '''
-
-
 def setup_db(app):
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_path
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    db.app = app
-    db.init_app(app)
-
-
+    try:
+        database_filename = os.environ['APP_DB']
+        project_dir = os.path.dirname(os.path.abspath(__file__))
+        database_path = "sqlite:///{}".format(os.path.join(project_dir, database_filename))
+        
+        app.config["SQLALCHEMY_DATABASE_URI"] = database_path
+        app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        db.app = app
+        db.init_app(app)
+    except Exception as err:
+        # Log the error to the console
+        print("Something went wrong", err)
+        # rethrow it
+        raise err
 '''
 db_drop_and_create_all()
     drops the database tables and starts fresh
     can be used to initialize a clean database
     !!NOTE you can change the database_filename variable to have multiple verisons of a database
 '''
-
-
 def db_drop_and_create_all():
     try: 
         ROWS = 9
@@ -69,15 +65,12 @@ def db_drop_and_create_all():
         # rethrow it
         raise err
 
-# ROUTES
 
 
 '''
 Drink
 a persistent drink entity, extends the base SQLAlchemy Model
 '''
-
-
 class Drink(db.Model):
     # Autoincrementing, unique primary key
     id = Column(Integer().with_variant(Integer, "sqlite"), primary_key=True)
