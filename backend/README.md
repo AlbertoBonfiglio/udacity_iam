@@ -30,24 +30,6 @@ This will install all of the required packages we selected within the `requireme
 
 - [jose](https://python-jose.readthedocs.io/en/latest/) JavaScript Object Signing and Encryption for JWTs. Useful for encoding, decoding, and verifying JWTS.
 
-## Running the server
-
-From within the `./src` directory first ensure you are working using your created virtual environment.
-
-Each time you open a new terminal session, run:
-
-```bash
-export FLASK_APP=api.py;
-```
-
-To run the server, execute:
-
-```bash
-flask run --reload
-```
-
-The `--reload` flag will detect file changes and restart the server automatically.
-
 ## Tasks
 
 ### Setup Auth0
@@ -77,11 +59,48 @@ The `--reload` flag will detect file changes and restart the server automaticall
    - Import the postman collection `./starter_code/backend/udacity-fsnd-udaspicelatte.postman_collection.json`
    - Right-clicking the collection folder for barista and manager, navigate to the authorization tab, and including the JWT in the token field (you should have noted these JWTs).
    - Run the collection and correct any errors.
-   - Export the collection overwriting the one we've included so that we have your proper JWTs during review!
+   - TODO [] Export the collection overwriting the one we've included so that we have your proper JWTs during review!
 
 ### Implement The Server
 
 There are `TODO` comments throughout the `./backend/src`. We recommend tackling the files in order and from top to bottom:
 
-1. `./src/auth/auth.py`
-2. `./src/api.py`
+1. `./src/auth/__init__.py`
+2. `./src/api/__init__.py`
+
+### Setup the environment
+
+To run the backend several environment variables need to be properly configured:
+1. `FLASK_APP`: "${workspaceFolder}/backend/api/api.py",
+2. `FLASK_ENV`: `development` or `production`,
+3. `CORS`: by deafault is set to `*` which accepts all connection origins. Should be changed to something more restrictive for production,
+4. `APP_DB`: the database name. I.E.: `database.db` for development or production, `database.test.db` for unit tests,
+5. `INIT_DB`: True for resetting the databse, False for using the current database. Should be set to False after the 1st run to avoid overwriting the existing DB. For unit testing it should be set to True at all times. Please note, False and True values ARE case sensitive. 
+6. `AUTH0_DOMAIN`: the Auth0 custom domain for the APP,
+7. `AUTH0_CLIENTID`: the Clinet ID for the Auth0 APP,
+8. `AUTH0_AUDIENCE`: the audience for the Auth0 API,
+9. `AUTH0_ALGORITHMS`: "['RS256']",
+    
+These variables can either be configured manually from within the `./backend` directory by, for example, running in the terminal:
+```bash
+export FLASK_APP=backend/api/api.py;
+export FLASK_ENV=development;
+...
+```
+or more conveniently by setting the `.env` and `.env.test` files. Alternatively for VSCode users the variables could be set in the `env` section of the launch.json file
+
+
+Additionally the `AUTH0_TOKEN_TEST` in the `.env.test` file needs to be configured with a valid token to run the unit tests
+
+### Running the server
+
+From within the `./backend` directory first ensure you are working using your created virtual environment. Usually something like this:
+`source /home/<username>/<project>/.venv/bin/activate` should work.
+
+Once the python environment and the required variables are set, torun the server, execute:
+
+```bash
+flask run --reload
+```
+
+The `--reload` flag will detect file changes and restart the server automatically.
