@@ -1,4 +1,19 @@
-# Coffee Shop Backend
+# Coffee Shop Backend <!-- omit from toc -->
+
+## Table Of Content <!-- omit from toc -->
+- [Getting Started](#getting-started)
+  - [Installing Dependencies](#installing-dependencies)
+    - [Python 3.7](#python-37)
+    - [Virtual Environment](#virtual-environment)
+    - [PIP Dependencies](#pip-dependencies)
+      - [Key Dependencies](#key-dependencies)
+- [Tasks](#tasks)
+  - [Setup Auth0](#setup-auth0)
+  - [Implement The Server](#implement-the-server)
+  - [Setup the environment](#setup-the-environment)
+  - [Running the server](#running-the-server)
+- [Api Endpoint documentation](#api-endpoint-documentation)
+
 
 ## Getting Started
 
@@ -104,3 +119,6 @@ flask run --reload
 ```
 
 The `--reload` flag will detect file changes and restart the server automatically.
+
+## Api Endpoint documentation
+The endpoints for the backend API are documented in the [README_API](./README_API.md) file.

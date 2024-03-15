@@ -29,7 +29,9 @@ class AuthError(Exception):
 #TODO [X] implement get_token_auth_header() method
     [X] it should attempt to get the header from the request
     [X] it should raise an AuthError if no header is present
-            10.4.1 400 Bad Request The request could not be understood by the server due to malformed syntax. The client SHOULD NOT repeat the request without modifications.
+            10.4.1 400 Bad Request The request could not be understood 
+            by the server due to malformed syntax. The client SHOULD NOT 
+            repeat the request without modifications.
     [X] it should attempt to split bearer and the token
     [X] it should raise an AuthError if the header is malformed
     [X] return the token part of the header
@@ -162,7 +164,7 @@ def get_token_rsa_key(header):
     [X] it should be an Auth0 token with key id (kid)
     [X] it should verify the token using Auth0 /.well-known/jwks.json
     [X] it should decode the payload from the token
-    [X]  it should validate the claims
+    [X] it should validate the claims
     [X] return the decoded payload
 
     !!NOTE urlopen has a common certificate error described here: https://stackoverflow.com/questions/50236117/scraping-ssl-certificate-verify-failed-error-for-http-en-wikipedia-org
