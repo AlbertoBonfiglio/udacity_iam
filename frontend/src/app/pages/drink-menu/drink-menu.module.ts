@@ -17,13 +17,12 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    RouterModule.forChild(routes)
-  ],
-  entryComponents: [DrinkFormComponent],
-  declarations: [DrinkMenuPage, DrinkGraphicComponent, DrinkFormComponent],
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        RouterModule.forChild(routes)
+    ],
+    declarations: [DrinkMenuPage, DrinkGraphicComponent, DrinkFormComponent]
 })
 export class DrinkMenuPageModule {}
