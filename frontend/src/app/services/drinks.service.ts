@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { AuthService } from './auth.service';
 import { environment } from 'src/environments/environment';
+import { BehaviorSubject } from 'rxjs';
 
 export interface Drink {
   id: number;
@@ -21,6 +22,7 @@ export class DrinksService {
 
   url = environment.apiServerUrl;
 
+  public drinks: BehaviorSubject<Drink[]> = new BehaviorSubject<Drink[]>([]); 
   public items: {[key: number]: Drink} = {};
   // = {
   //                             1: {
@@ -94,6 +96,7 @@ export class DrinksService {
     if (this.auth.can('get:drinks-detail')) {
       this.http.get(this.url + '/drinks-detail', this.getHeaders())
       .subscribe((res: any) => {
+        this.drinks.next(res.drinks);
         this.drinksToItems(res.drinks);
         console.log(res);
       });
@@ -101,6 +104,7 @@ export class DrinksService {
       this.http.get(this.url + '/drinks', this.getHeaders())
       .subscribe((res: any) => {
         this.drinksToItems(res.drinks);
+        this.drinks.next(res.drinks);
         console.log(res);
       });
     }

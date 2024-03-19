@@ -6,6 +6,16 @@ import { environment } from '../../environments/environment';
 const JWTS_LOCAL_KEY = 'JWTS_LOCAL_KEY';
 const JWTS_ACTIVE_INDEX_KEY = 'JWTS_ACTIVE_INDEX_KEY';
 
+export enum Permissions {
+  getDrinks = `get:drinks`,
+  getDrinksDetail = `get:drinks-detail`,
+  getDrinksDetails = `get:drinks-details`,
+  postDrinksDetail = `post:drinks`,
+  patchDrinksDetail = `patch:drinks`,
+  deleteDrinksDetail = `delete:drinks`,
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -15,14 +25,14 @@ export class AuthService {
   clientId = environment.auth0.clientId;
   callbackURL = environment.auth0.callbackURL;
 
-  token: string;
+  token: string = '';
   payload: any;
 
   constructor() { }
 
   build_login_link(callbackPath = '') {
     let link = 'https://';
-    link += this.url + '.auth0.com';
+    link += this.url;
     link += '/authorize?';
     link += 'audience=' + this.audience + '&';
     link += 'response_type=token&';
@@ -52,7 +62,7 @@ export class AuthService {
   }
 
   load_jwts() {
-    this.token = localStorage.getItem(JWTS_LOCAL_KEY) || null;
+    this.token = localStorage.getItem(JWTS_LOCAL_KEY) || '';
     if (this.token) {
       this.decodeJWT(this.token);
     }
@@ -75,6 +85,16 @@ export class AuthService {
   }
 
   can(permission: string) {
-    return this.payload && this.payload.permissions && this.payload.permissions.length && this.payload.permissions.indexOf(permission) >= 0;
+    console.log(this.payload);
+    console.log(this.payload && this.payload.permissions);
+    console.log(
+      this.payload &&
+        this.payload.permissions &&
+        this.payload.permissions.length
+    );
+    return this.payload && 
+      this.payload.permissions && 
+      this.payload.permissions.length && 
+      this.payload.permissions.indexOf(permission) >= 0;
   }
 }
