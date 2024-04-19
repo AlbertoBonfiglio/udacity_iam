@@ -9,7 +9,7 @@ import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
 
-  let statusBarSpy, splashScreenSpy, platformReadySpy, platformSpy;
+  let statusBarSpy: { styleDefault: any; }, splashScreenSpy: { hide: any; }, platformReadySpy: Promise<void>, platformSpy: { ready: any; };
 
   beforeEach(waitForAsync(() => {
     statusBarSpy = jasmine.createSpyObj('StatusBar', ['styleDefault']);

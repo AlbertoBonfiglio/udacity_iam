@@ -129,10 +129,10 @@ def create_app(env=".env"):
     #TODO [ ] implement endpoint PATCH /drinks/<id>
          where <id> is the existing model id
         [X] it should respond with a 404 error if <id> is not found
-        [ ] it should update the corresponding row for <id>
+        [X] it should update the corresponding row for <id>
         [ ] it should require the 'patch:drinks' permission
-        [ ] it should contain the drink.long() data representation
-        [ ] returns status code 200 and json {"success": True, "drinks": drink} 
+        [X] it should contain the drink.long() data representation
+        [X] returns status code 200 and json {"success": True, "drinks": drink} 
             where drink an array containing only the updated drink or appropriate status code indicating reason for failure
     '''
     @app.route('/api/v1.0/drinks/<int:id>', methods=['PATCH'])
@@ -140,20 +140,31 @@ def create_app(env=".env"):
     @requires_auth('patch:drinks')
     def patch_drink(id: int):
         try:
+            canUpdate = False;
             body = request.get_json()  # type: ignore
             
-            
+            title = body.get('title', '')
+            recipe = body.get('recipe', [])
             
             record: Drink = Drink.query.get(id)
             if (record is None):
                 return not_found(f'Drink # {id} not found.')
 
-            record: Drink = Drink(
-                title=body.get('title', '').strip(),
-                recipe=body.get('recipe', '').strip()
-            )
-            if (record.title != '' and record.recipe != ''):
-                record.insert()
+            if (title.strip() != ''):    
+                record.title == title
+                canUpdate = True
+            
+            if len(recipe) > 0:
+                record.recipe = {'data': recipe}
+                canUpdate = True
+            else:
+                return unprocessable('A drink must have at least one ingredient.')
+            
+            if (record.validateRecipe() == False): 
+                return unprocessable(f'Invalid data: recipe')
+
+            if (canUpdate):
+                record.update();
             else:
                 return unprocessable('Invalid or missing data.')
 
@@ -260,7 +271,7 @@ def create_app(env=".env"):
         return jsonify({
             "success": False,
             "error": 'Unprocessable',
-            "message": f"The request is unprocessable: {error.description}"
+            "message": f"The request is unprocessable: {error}"
         }), 422
 
     return app

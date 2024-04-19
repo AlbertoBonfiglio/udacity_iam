@@ -9,6 +9,6 @@ export const environment = {
     url: "darthbert-udacity.au.auth0.com", // the auth0 domain prefix
     audience: "Udacity_IAM_API", // the audience set for the auth0 app
     clientId: "YjjkCnzsIK38F1rVy2Gfa6SD90N34iMF", // the client id generated for the auth0 app
-    callbackURL: "http://localhost:8100", // the base url of the running ionic application.
+    callbackURL: "http://localhost:4200", // the base url of the running ionic application.
   },
 };

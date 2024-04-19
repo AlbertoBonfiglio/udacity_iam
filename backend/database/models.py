@@ -1,6 +1,7 @@
 import os
+import sys
 from faker import Faker
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, Integer, JSON
 from flask_sqlalchemy import SQLAlchemy
 import json
 
@@ -35,6 +36,7 @@ def setup_db(app):
         app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         db.app = app
         db.init_app(app)
+      #  db_drop_and_create_all();
     except Exception as err:
         # Log the error to the console
         print("Something went wrong", err)
@@ -48,7 +50,7 @@ db_drop_and_create_all()
 '''
 def db_drop_and_create_all():
     try: 
-        ROWS = 9
+        ROWS = 7
         db.drop_all()
         db.create_all()
 
@@ -56,9 +58,13 @@ def db_drop_and_create_all():
         for i in DRINKS:
             drink = Drink(
                 title=i,
-                recipe='[{"name": "water", "color": "blue", "parts": 1}]'
+                recipe= {"data": [
+                             {"name": "water", "color": "blue", "parts": 1}
+                        ]}
             )
             drink.insert()
+            
+        print('database seeded')    
     except Exception as err:
         # Log the error to the console
         print("Something went wrong", err)
@@ -75,20 +81,19 @@ class Drink(db.Model):
     # Autoincrementing, unique primary key
     id = Column(Integer().with_variant(Integer, "sqlite"), primary_key=True)
     # String Title
-    title = Column(String(80), unique=True)
+    title = Column(String(80), nullable=False,  unique=True)
     # the ingredients blob - this stores a lazy json blob
-    # the required datatype is [{'color': string, 'name':string, 'parts':number}]
-    recipe = Column(String(180), nullable=False)
+    # the required datatype is {[{'color': string, 'name':string, 'parts':number}]}
+    recipe = Column(JSON, nullable=False, default={"data": []})
 
     '''
     short()
         short form representation of the Drink model
     '''
-
     def short(self):
-        print(json.loads(self.recipe))
+        data = self.recipe['data']        
         short_recipe = [{'color': r['color'], 'parts': r['parts']}
-                        for r in json.loads(self.recipe)]
+                        for r in data]
         return {
             'id': self.id,
             'title': self.title,
@@ -99,13 +104,29 @@ class Drink(db.Model):
     long()
         long form representation of the Drink model
     '''
-
     def long(self):
         return {
             'id': self.id,
             'title': self.title,
-            'recipe': json.loads(self.recipe)
+            'recipe': self.recipe['data']
         }
+
+    '''
+    validateRecipe(self)
+    '''
+    def validateRecipe(self):
+        # Simple validator. If any of the properties is missing in the 
+        # array objects the validation fails 
+        try:
+            data = self.recipe['data']
+            check = [
+                {'color': r['color'], 'parts': r['parts'], 'name':r['name']}
+                for r in data
+            ]
+            return True
+        except Exception as err:
+            print(sys.exc_info(), err)
+            return False
 
     '''
     insert()
@@ -145,6 +166,7 @@ class Drink(db.Model):
     '''
 
     def update(self):
+        # db.session.update(self)
         db.session.commit()
 
     def __repr__(self):

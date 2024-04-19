@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Drink, DrinksService } from 'src/app/services/drinks.service';
 import { ModalController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
+import { colors } from 'src/app/core/colors';
 
 @Component({
   selector: 'app-drink-form',
@@ -9,6 +10,7 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./drink-form.component.scss'],
 })
 export class DrinkFormComponent implements OnInit {
+  public availableColors = colors;
   @Input()  drink!: Drink;
   @Input() isNew: boolean = false;
 
@@ -34,7 +36,7 @@ export class DrinkFormComponent implements OnInit {
   }
 
   addIngredient(i: number = 0) {
-    this.drink.recipe.splice(i + 1, 0, {name: '', color: 'white', parts: 1});
+    this.drink.recipe.splice(i + 1, 0, {name: 'Another one', color: 'white', parts: 1});
   }
 
   removeIngredient(i: number) {
