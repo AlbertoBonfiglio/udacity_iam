@@ -5,8 +5,9 @@ from flask import Flask, request, jsonify
 from flask_api import status
 from flask_cors import CORS, cross_origin
 from backend.auth.auth import AuthError, requires_auth
-from backend.database.models import db, db_drop_and_create_all, setup_db, Drink
+from backend.database.models import db, setup_db, Drink
 from backend.utils import load_config
+from backend.database.seed import db_drop_and_create_all
 
 
 def create_app(env=".env"):
@@ -17,6 +18,16 @@ def create_app(env=".env"):
     setup_db(app)
     # makes sure there are no sessions dangling
     db.session.expire_all() 
+    '''
+    #TODO [X] uncomment the following line to initialize the datbase
+    !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
+    !! NOTE THIS ENV VARIABLE NEEDS MUST BE SET TO FALSE AFTER 1st RUN
+    !! Running this function will add dummy records to the database
+    '''
+    if os.environ["INIT_DB"] == "True":
+        db_drop_and_create_all()
+
+
 
     # Sets up cors. For the time being sets the allowed origins to all 
     CORS(app, resources={r"/api/*": {"origins": os.environ["CORS"]}})
@@ -32,15 +43,6 @@ def create_app(env=".env"):
                              'GET, PATCH, POST, DELETE, OPTIONS')
         return response
 
-    '''
-    #TODO [X] uncomment the following line to initialize the datbase
-    !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
-    !! NOTE THIS ENV VARIABLE NEEDS MUST BE SET TO FALSE AFTER 1st RUN
-    !! Running this function will add dummy records to the database
-    '''
-    if os.environ["INIT_DB"] == "True":
-        db_drop_and_create_all()
-
     # ROUTES
     '''
     #TODO [X] implement endpoint GET /drinks
@@ -51,7 +53,6 @@ def create_app(env=".env"):
     '''
     @app.route('/api/v1.0/drinks', methods=['GET'])
     @cross_origin()
-    ##@requires_auth('get:drinks')
     def get_drinks():
         try:
             data = Drink.query.all()
@@ -130,7 +131,7 @@ def create_app(env=".env"):
          where <id> is the existing model id
         [X] it should respond with a 404 error if <id> is not found
         [X] it should update the corresponding row for <id>
-        [ ] it should require the 'patch:drinks' permission
+        [X] it should require the 'patch:drinks' permission
         [X] it should contain the drink.long() data representation
         [X] returns status code 200 and json {"success": True, "drinks": drink} 
             where drink an array containing only the updated drink or appropriate status code indicating reason for failure

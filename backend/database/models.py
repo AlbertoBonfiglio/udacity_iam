@@ -1,29 +1,13 @@
 import os
 import sys
-from faker import Faker
 from sqlalchemy import Column, String, Integer, JSON
 from flask_sqlalchemy import SQLAlchemy
 import json
 
-DRINKS = [ 
-    "20th century",
-    "Angel face",
-    "Aviation", 
-    "Bee's knees",
-    "Bijou",
-    "Blackthorn",
-    "Bloody Margaret",
-    "Bramble",
-    "Breakfast martini",
-    "Bronx",
-    "Casino",
-    "Cloister"
-]
-
 db = SQLAlchemy()
 
 '''
-setup_db(app)
+    setup_db(app)
     binds a flask application and a SQLAlchemy service
 '''
 def setup_db(app):
@@ -36,46 +20,18 @@ def setup_db(app):
         app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         db.app = app
         db.init_app(app)
-      #  db_drop_and_create_all();
+
     except Exception as err:
         # Log the error to the console
         print("Something went wrong", err)
         # rethrow it
         raise err
-'''
-db_drop_and_create_all()
-    drops the database tables and starts fresh
-    can be used to initialize a clean database
-    !!NOTE you can change the database_filename variable to have multiple verisons of a database
-'''
-def db_drop_and_create_all():
-    try: 
-        ROWS = 7
-        db.drop_all()
-        db.create_all()
+    
+ 
 
-        # add one demo row which is helping in POSTMAN test
-        for i in DRINKS:
-            drink = Drink(
-                title=i,
-                recipe= {"data": [
-                             {"name": "water", "color": "blue", "parts": 1}
-                        ]}
-            )
-            drink.insert()
-            
-        print('database seeded')    
-    except Exception as err:
-        # Log the error to the console
-        print("Something went wrong", err)
-        # rethrow it
-        raise err
-
-
-
-'''
-Drink
-a persistent drink entity, extends the base SQLAlchemy Model
+''' 
+    Drink
+    a persistent drink entity, extends the base SQLAlchemy Model
 '''
 class Drink(db.Model):
     # Autoincrementing, unique primary key
