@@ -4,7 +4,7 @@ import json
 from flask import Flask, request, jsonify
 from flask_api import status
 from flask_cors import CORS, cross_origin
-from sqlalchemy.sql import text
+from sqlalchemy.sql import text, collate
 from sqlalchemy import func
 from backend.auth.auth import requires_auth
 from backend.database.db_setup import db, setup_db
@@ -63,7 +63,11 @@ def create_app(env=".env"):
     @cross_origin()
     def get_drinks():
         try:
-            data = Drink.query.order_by(Drink.title.asc()).all()
+            # Need to collate to avoid capitalized words to be sorted before lower case words
+            # e.g. 'Mr' before 'alpha'
+            data = Drink.query \
+                .order_by(collate(Drink.title, 'NOCASE')) \
+                .all()
             formattedData = [datum.short() for datum in data]
             # returns the formatted data or an empty array
             return jsonify({
@@ -87,7 +91,11 @@ def create_app(env=".env"):
     @requires_auth('get:drinks-details')
     def get_drinks_details():
         try:
-            data = Drink.query.order_by(Drink.title.asc()).all()
+            # Need to collate to avoid capitalized words to be sorted before lower case words
+            # e.g. 'Mr' before 'alpha'
+            data = Drink.query\
+                .order_by(collate(Drink.title, 'NOCASE')) \
+                .all()
             formattedData = [datum.long() for datum in data]
             # returns the formatted data or an empty array
             return jsonify({
