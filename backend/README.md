@@ -90,7 +90,7 @@ To run the backend several environment variables need to be properly configured:
 2. `FLASK_ENV`: `development` or `production`,
 3. `CORS`: by deafault is set to `*` which accepts all connection origins. Should be changed to something more restrictive for production,
 4. `APP_DB`: the database name. I.E.: `database.db` for development or production, `database.test.db` for unit tests,
-5. `INIT_DB`: True for resetting the databse, False for using the current database. Should be set to False after the 1st run to avoid overwriting the existing DB. For unit testing it should be set to True at all times. Please note, False and True values ARE case sensitive. 
+5. `INIT_DB`: True for resetting the database, False for using the current database. Should be set to False after the 1st run to avoid overwriting the existing DB. For unit testing it should be set to True at all times. Please note, False and True values ARE case sensitive. 
 6. `AUTH0_DOMAIN`: the Auth0 custom domain for the APP,
 7. `AUTH0_CLIENTID`: the Clinet ID for the Auth0 APP,
 8. `AUTH0_AUDIENCE`: the audience for the Auth0 API,

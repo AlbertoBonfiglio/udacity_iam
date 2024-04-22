@@ -42,7 +42,7 @@ def get_token_auth_header():
         raise AuthError({
             'code': 'missing_header',
             'description': 'Authorization header cannot be empty.'
-        }, status.HTTP_400_BAD_REQUEST)
+        }, status.HTTP_401_UNAUTHORIZED)
 
     # get the token
     auth_header = request.headers['Authorization']

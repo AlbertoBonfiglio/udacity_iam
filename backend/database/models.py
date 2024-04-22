@@ -1,33 +1,8 @@
-import os
 import sys
-from sqlalchemy import Column, String, Integer, JSON
-from flask_sqlalchemy import SQLAlchemy
+from backend.database.db_setup import db 
+from sqlalchemy import Column, String,VARCHAR, Integer, JSON, ARRAY, PickleType
 import json
 
-db = SQLAlchemy()
-
-'''
-    setup_db(app)
-    binds a flask application and a SQLAlchemy service
-'''
-def setup_db(app):
-    try:
-        database_filename = os.environ['APP_DB']
-        project_dir = os.path.dirname(os.path.abspath(__file__))
-        database_path = "sqlite:///{}".format(os.path.join(project_dir, database_filename))
-        
-        app.config["SQLALCHEMY_DATABASE_URI"] = database_path
-        app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-        db.app = app
-        db.init_app(app)
-
-    except Exception as err:
-        # Log the error to the console
-        print("Something went wrong", err)
-        # rethrow it
-        raise err
-    
- 
 
 ''' 
     Drink
@@ -40,14 +15,14 @@ class Drink(db.Model):
     title = Column(String(80), nullable=False,  unique=True)
     # the ingredients blob - this stores a lazy json blob
     # the required datatype is {[{'color': string, 'name':string, 'parts':number}]}
-    recipe = Column(JSON, nullable=False, default={"data": []})
+    recipe = Column(VARCHAR, nullable=True)
 
     '''
     short()
         short form representation of the Drink model
     '''
     def short(self):
-        data = self.recipe['data']        
+        data = json.loads(self.recipe)
         short_recipe = [{'color': r['color'], 'parts': r['parts']}
                         for r in data]
         return {
@@ -61,10 +36,11 @@ class Drink(db.Model):
         long form representation of the Drink model
     '''
     def long(self):
+        test = json.loads(self.recipe)
         return {
             'id': self.id,
             'title': self.title,
-            'recipe': self.recipe['data']
+            'recipe': json.loads(self.recipe)
         }
 
     '''
@@ -74,7 +50,7 @@ class Drink(db.Model):
         # Simple validator. If any of the properties is missing in the 
         # array objects the validation fails 
         try:
-            data = self.recipe['data']
+            data = json.loads(self.recipe)
             check = [
                 {'color': r['color'], 'parts': r['parts'], 'name':r['name']}
                 for r in data

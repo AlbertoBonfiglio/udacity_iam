@@ -1,16 +1,22 @@
 import os
 import sys
-from dotenv import load_dotenv
+import json
 from flask import Flask, request, jsonify
 from flask_api import status
 from flask_cors import CORS, cross_origin
-from backend.auth.auth import AuthError, requires_auth
-from backend.database.models import db, setup_db, Drink
+from sqlalchemy.sql import text
+from sqlalchemy import func
+from backend.auth.auth import requires_auth
+from backend.database.db_setup import db, setup_db
+from backend.database.seeder import db_drop_and_create_all
+from backend.database.models import Drink
 from backend.utils import load_config
-from backend.database.seed import db_drop_and_create_all
 
+
+# TODO [ ] Update postman with tests and token
 
 def create_app(env=".env"):
+    print('Creating Flask App')
     app = Flask(__name__)
     # loads the environment settings 
     load_config(env)
@@ -18,6 +24,7 @@ def create_app(env=".env"):
     setup_db(app)
     # makes sure there are no sessions dangling
     db.session.expire_all() 
+    
     '''
     #TODO [X] uncomment the following line to initialize the datbase
     !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
@@ -25,6 +32,7 @@ def create_app(env=".env"):
     !! Running this function will add dummy records to the database
     '''
     if os.environ["INIT_DB"] == "True":
+        print('Seeding Database')
         db_drop_and_create_all()
 
 
@@ -110,7 +118,7 @@ def create_app(env=".env"):
 
             record: Drink = Drink(
                 title=body.get('title', '').strip(),
-                recipe=body.get('recipe', '').strip()
+                recipe=json.dumps(body.get('recipe', []))
             )
             if (record.title != '' and record.recipe != ''):
                 record.insert()
@@ -127,7 +135,7 @@ def create_app(env=".env"):
             return internal_error(err)
 
     '''
-    #TODO [ ] implement endpoint PATCH /drinks/<id>
+    #TODO [X] implement endpoint PATCH /drinks/<id>
          where <id> is the existing model id
         [X] it should respond with a 404 error if <id> is not found
         [X] it should update the corresponding row for <id>
@@ -206,6 +214,45 @@ def create_app(env=".env"):
             print(sys.exc_info(), err)
             return internal_error(err)
 
+    """
+    #TODO [X]: Create a POST endpoint to get drinks based on a ingrediends term.
+    It should return any drink for whom the search term  is a substring of the recipe.
+
+    
+    """
+    @app.route('/api/v1.0/drinks/search', methods=['POST'])
+    @cross_origin()
+    def find_drinks():
+        try:
+            body = request.get_json()  # type: ignore
+            if (body is None):
+                return unprocessable('No search string provided')
+
+            search = body.get('search', None)
+
+            if (search is None):
+                return unprocessable('No search string provided')
+
+            # cleans up the string
+            search = search.strip()
+            result = []
+            if (search != ''):  # No point serarching for nothing
+                result = Drink.query \
+                    .filter(Drink.recipe.ilike(f'%{search}%'))\
+                    .all()
+
+            formattedData = [datum.long() for datum in result]
+
+            return jsonify({
+                'success': True,
+                'query': search,
+                'drinks': formattedData,
+                'found': len(formattedData)
+            })
+
+        except Exception as err:
+            print(sys.exc_info(), err)
+            return internal_error(err)
 
 
     # Error Handling
@@ -259,8 +306,8 @@ def create_app(env=".env"):
     def not_found(error):
         return jsonify({
             "success": False,
-            "error": error.name,
-            "message": error.description
+            "error": error,
+            "message": 'Resource not found'
         }), status.HTTP_404_NOT_FOUND
 
     '''

@@ -10,11 +10,32 @@
 
 <ion-content *ngIf="auth.token">
   <ion-card>
-    <ion-item>
-      <ion-label>Active JWT</ion-label>
-      <ion-textarea [ngModel]="auth.token" name="Active JWT"></ion-textarea>
-    </ion-item>
-    <ion-button (click)="auth.logout()">Log Out</ion-button>
-  </ion-card>
+      <ion-card-header>
+        <ion-card-title>User Profile</ion-card-title>
+        <ion-card-subtitle></ion-card-subtitle>
+      </ion-card-header>
+    <ion-card-content>  
+     
+      <h2>User Name</h2>
+      <h2>{{decoded.iss}}</h2>
+        <ion-textarea [ngModel]="auth.token" 
+          name="Active JWT">
+        </ion-textarea>
+    
+        <ion-item>
+          <ion-label>Active JWT</ion-label>
+          <ion-textarea [ngModel]="auth.token" 
+            name="Active JWT"></ion-textarea>
+      </ion-item>
+    </ion-card-content>
+      
+    <ion-footer>
+      <ion-toolbar>
+        <ion-row style="display: flex; justify-content: end; padding: 8px;">
+          <ion-button (click)="auth.logout()">Log Out</ion-button>
+        </ion-row>
+      </ion-toolbar>
+    </ion-footer>
+ </ion-card>
   
 </ion-content>
