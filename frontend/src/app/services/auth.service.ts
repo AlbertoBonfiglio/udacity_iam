@@ -85,13 +85,7 @@ export class AuthService {
   }
 
   can(permission: string) {
-    console.log(this.payload);
-    console.log(this.payload && this.payload.permissions);
-    console.log(
-      this.payload &&
-        this.payload.permissions &&
-        this.payload.permissions.length
-    );
+
     return this.payload && 
       this.payload.permissions && 
       this.payload.permissions.length && 

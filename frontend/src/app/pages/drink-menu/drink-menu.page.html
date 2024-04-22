@@ -2,11 +2,20 @@
   <ion-toolbar style="text-align: center">
     <ion-title><b>Uda-Spice Latte</b> Cafe</ion-title>
   </ion-toolbar>
+
+  <ion-searchbar placeholder="Search ingredients" 
+    (ionInput)="handleSearchInput($event)"
+    [debounce]="500" 
+    show-clear-button="always" 
+    value=""
+    >
+  </ion-searchbar>
+
 </ion-header>
 
-<ion-content *ngIf="(drinks | async)">
+<ion-content *ngIf="(drinksSvc.drinks| async)">
   <div class="item-menu">
-    <ion-card class="card-item" *ngFor=" let drink of drinks | async" 
+    <ion-card class="card-item" *ngFor=" let drink of drinksSvc.drinks | async" 
       (click)="openForm(drink)">
       <ion-card-header>
         <ion-card-title>{{drink.title}}</ion-card-title>

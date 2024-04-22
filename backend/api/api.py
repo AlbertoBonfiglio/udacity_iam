@@ -63,11 +63,16 @@ def create_app(env=".env"):
     @cross_origin()
     def get_drinks():
         try:
+            filter = request.args.get('search', '', type=str)  # type: ignore
             # Need to collate to avoid capitalized words to be sorted before lower case words
             # e.g. 'Mr' before 'alpha'
             data = Drink.query \
-                .order_by(collate(Drink.title, 'NOCASE')) \
-                .all()
+                .order_by(collate(Drink.title, 'NOCASE')) 
+                #//.all()
+            if (filter != ''):  # No point serarching for nothing
+                data = data.filter(Drink.recipe.ilike(f'%{filter}%'))
+                
+            data = data.all()    
             formattedData = [datum.short() for datum in data]
             # returns the formatted data or an empty array
             return jsonify({
@@ -91,11 +96,15 @@ def create_app(env=".env"):
     @requires_auth('get:drinks-details')
     def get_drinks_details():
         try:
+            filter = request.args.get('search', '', type=str)  # type: ignore
             # Need to collate to avoid capitalized words to be sorted before lower case words
             # e.g. 'Mr' before 'alpha'
             data = Drink.query\
-                .order_by(collate(Drink.title, 'NOCASE')) \
-                .all()
+                .order_by(collate(Drink.title, 'NOCASE')) 
+            if (filter != ''):  # No point serarching for nothing
+                data = data.filter(Drink.recipe.ilike(f'%{filter}%'))
+                
+            data = data.all()
             formattedData = [datum.long() for datum in data]
             # returns the formatted data or an empty array
             return jsonify({
@@ -222,45 +231,7 @@ def create_app(env=".env"):
             print(sys.exc_info(), err)
             return internal_error(err)
 
-    """
-    #TODO [X]: Create a POST endpoint to get drinks based on a ingrediends term.
-    It should return any drink for whom the search term  is a substring of the recipe.
 
-    
-    """
-    @app.route('/api/v1.0/drinks/search', methods=['POST'])
-    @cross_origin()
-    def find_drinks():
-        try:
-            body = request.get_json()  # type: ignore
-            if (body is None):
-                return unprocessable('No search string provided')
-
-            search = body.get('search', None)
-
-            if (search is None):
-                return unprocessable('No search string provided')
-
-            # cleans up the string
-            search = search.strip()
-            result = []
-            if (search != ''):  # No point serarching for nothing
-                result = Drink.query \
-                    .filter(Drink.recipe.ilike(f'%{search}%'))\
-                    .all()
-
-            formattedData = [datum.long() for datum in result]
-
-            return jsonify({
-                'success': True,
-                'query': search,
-                'drinks': formattedData,
-                'found': len(formattedData)
-            })
-
-        except Exception as err:
-            print(sys.exc_info(), err)
-            return internal_error(err)
 
 
     # Error Handling
