@@ -1,6 +1,6 @@
 import sys
 from backend.database.db_setup import db 
-from sqlalchemy import Column, String,VARCHAR, Integer, JSON, ARRAY, PickleType
+from sqlalchemy import Column, String,VARCHAR, Integer
 import json
 
 

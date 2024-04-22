@@ -11,6 +11,8 @@ import { AuthService } from '../../services/auth.service';
 export class UserPagePage implements OnInit {
   loginURL: string;
   decoded: any;
+  showToken: boolean = false;
+  tokenButton: string = 'Show Token';
 
   constructor(public auth: AuthService) {
     this.loginURL = auth.build_login_link('/tabs/user-page');
@@ -21,4 +23,13 @@ export class UserPagePage implements OnInit {
   ngOnInit() {
   }
 
+  toggleToken(){
+    this.showToken = !this.showToken;
+    this.tokenButton = this.showToken ? 'Hide Token' : 'Show Token';
+  }
+
+  logOut() {
+    this.decoded = null;
+    this.auth.logout();
+  }
 }

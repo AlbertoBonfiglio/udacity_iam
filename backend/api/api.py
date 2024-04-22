@@ -63,7 +63,7 @@ def create_app(env=".env"):
     @cross_origin()
     def get_drinks():
         try:
-            data = Drink.query.all()
+            data = Drink.query.order_by(Drink.title.asc()).all()
             formattedData = [datum.short() for datum in data]
             # returns the formatted data or an empty array
             return jsonify({
@@ -87,7 +87,7 @@ def create_app(env=".env"):
     @requires_auth('get:drinks-details')
     def get_drinks_details():
         try:
-            data = Drink.query.all()
+            data = Drink.query.order_by(Drink.title.asc()).all()
             formattedData = [datum.long() for datum in data]
             # returns the formatted data or an empty array
             return jsonify({
@@ -164,7 +164,7 @@ def create_app(env=".env"):
                 canUpdate = True
             
             if len(recipe) > 0:
-                record.recipe = {'data': recipe}
+                record.recipe = json.dumps(recipe)
                 canUpdate = True
             else:
                 return unprocessable('A drink must have at least one ingredient.')

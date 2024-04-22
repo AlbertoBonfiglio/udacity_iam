@@ -5,30 +5,23 @@
 </ion-header>
 
 <ion-content *ngIf="(drinks | async)">
-<div class="item-menu">
-  
-  <ion-card class="card-item" *ngFor=" let drink of drinks | async" 
-    (click)="openForm(drink)">
-    <ion-card-header>
-      <ion-card-title>{{drink.title}}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <app-drink-graphic [drink]="drink"></app-drink-graphic>
-    </ion-card-content>
-  </ion-card>
-  
-
-  <ion-card class="card-add-item"
-    *ngIf="auth.can('post:drinks')" (click)="openForm(null)">
-    <ion-card-header>
-      <ion-card-title>Create Drink</ion-card-title>
+  <div class="item-menu">
+    <ion-card class="card-item" *ngFor=" let drink of drinks | async" 
+      (click)="openForm(drink)">
+      <ion-card-header>
+        <ion-card-title>{{drink.title}}</ion-card-title>
       </ion-card-header>
-
-    <ion-card-content style="color:grey; font-size: 256%;">
-      <ion-icon name="add-circle"></ion-icon>
-    </ion-card-content>
-  </ion-card>
-
-
-</div>
+      <ion-card-content>
+        <app-drink-graphic [drink]="drink"></app-drink-graphic>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>
+
+
+<ion-fab slot="fixed" vertical="bottom" horizontal="end" 
+  *ngIf="auth.can('post:drinks')" (click)="openForm(null)">
+  <ion-fab-button>
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>  
+</ion-fab>
