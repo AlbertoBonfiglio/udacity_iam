@@ -81,21 +81,20 @@ def check_permissions(permission, payload):
         for value in payload["permissions"]:
             if (value.lower() == permission.lower()):
                 return True
-
+        raise AuthError({
+            'code': 'Forbidden',
+            'description': f'Premissions needed for operations are not supplied.'
+        }, status.HTTP_403_FORBIDDEN)
+        
     except KeyError as err:
         raise AuthError({
             'code': 'invalid_token',
             'description': f'Authorization token is missing the permissions array.'
         }, status.HTTP_401_UNAUTHORIZED)
 
-    except Exception as err:
-        raise AuthError({
-            'code': 'invalid_token',
-            'description': f'Authorization token is malformed. {err}'
-        }, status.HTTP_400_BAD_REQUEST)
-
-    # Catches the auth error and adds data if in development for debugging. In production we don't send
-    #  details to the user for security issues
+    
+    # Catches the auth error and adds data if in development for debugging. 
+    # In production we don't send details to the user for security issues
     description = '***********'
     if (os.environ['FLASK_ENV'] == "development") :
         description = f'{permission}'
@@ -240,6 +239,7 @@ def requires_auth(permission=''):
                 token = get_token_auth_header()
                 payload = verify_decode_jwt(token)
                 check_permissions(permission, payload)
+                
             except AuthError as err:
                 print(err)  # for console debugging
                 abort(err.status_code)

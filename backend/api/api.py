@@ -137,7 +137,7 @@ def create_app(env=".env"):
                 title=body.get('title', '').strip(),
                 recipe=json.dumps(body.get('recipe', []))
             )
-            if (record.title != '' and record.recipe != ''):
+            if (record.title != '' and record.recipe != '[]'):
                 record.insert()
             else:
                 return unprocessable('Invalid or missing data.')
@@ -177,7 +177,7 @@ def create_app(env=".env"):
                 return not_found(f'Drink # {id} not found.')
 
             if (title.strip() != ''):    
-                record.title == title
+                record.title = title
                 canUpdate = True
             
             if len(recipe) > 0:
